@@ -359,8 +359,13 @@ const transform = new TransformControls(edCam, renderer.domElement);
 transform.setSize(0.9);
 scene.add(transform);
 const yawGizmo = new TransformControls(edCam, renderer.domElement);
-yawGizmo.setMode('rotate'); yawGizmo.showX = false; yawGizmo.showZ = false; yawGizmo.setSize(1.55);
+yawGizmo.setMode('rotate'); yawGizmo.setSpace('local'); yawGizmo.setSize(1.55);
 scene.add(yawGizmo);
+// keep only the three axis rings (X tilt, Y turn, Z roll): drop the screen ring and free-rotate sphere
+try {
+  const gz = yawGizmo.children.find(c => c.gizmo && c.picker);
+  for (const grp of [gz.gizmo.rotate, gz.picker.rotate]) for (const h of [...grp.children]) if (h.name === 'E' || h.name === 'XYZE') grp.remove(h);
+} catch (e) {}
 function syncYaw() {
   const want = transform.object && transform.mode === 'translate' && selected !== 'cam' ? transform.object : null;
   if (want && yawGizmo.object !== want) yawGizmo.attach(want);
