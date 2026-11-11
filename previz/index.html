@@ -7,11 +7,12 @@
 <title>Превиз — редактор болванок</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Unbounded:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Unbounded:wght@500;700&family=Golos+Text:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#111215;--panel:#191b1f;--panel2:#22252b;--panel3:#2a2e35;--line:#2d3038;--text:#e7e8eb;--muted:#8d919a;--accent:#f2c14e;--blue:#5ac8fa;--red:#ff5d5d}
 *{box-sizing:border-box}
-html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:13px/1.35 Inter,system-ui,-apple-system,sans-serif;overflow:hidden;-webkit-font-smoothing:antialiased}
+html,body{margin:0;background:var(--bg);color:var(--text);font:13px/1.35 Inter,system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+html{scroll-behavior:smooth}
 button{font:inherit;color:inherit}
 #app{display:grid;grid-template-rows:auto 48px minmax(0,1fr) 196px;grid-template-columns:212px minmax(0,1fr) 288px;height:100vh}
 #top{grid-column:1/4;display:flex;align-items:center;gap:6px;padding:0 10px;border-bottom:1px solid var(--line);background:var(--panel);overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
@@ -123,7 +124,29 @@ input[type=checkbox]{accent-color:var(--accent);width:15px;height:15px;margin:0;
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .empty{color:var(--muted);font-size:12px;padding:4px 12px 10px}
 #promo{grid-column:1/4;display:flex;align-items:center;gap:14px;padding:7px 12px 7px 14px;background:linear-gradient(90deg,#2a2210 0%,#1b1a16 45%,#16171b 100%);border-bottom:1px solid #3a3220;min-height:40px;overflow:hidden}
-#promo .pl{font-family:Unbounded,'Arial Black',sans-serif;font-weight:700;letter-spacing:.06em;font-size:12px;color:#f2a65e;white-space:nowrap}
+#promo .pl{display:flex;align-items:center;color:#ece6da;flex-shrink:0}
+#promo .pl .np-logo{height:13px;width:auto;display:block}
+#hero{position:relative;background:#111214;color:#ece6da;border-bottom:1px solid rgba(236,230,218,.13);overflow:hidden}
+#hero:before{content:'';position:absolute;inset:0;background:radial-gradient(70% 90% at 85% 10%,rgba(242,166,94,.16),transparent 60%),radial-gradient(60% 80% at 0% 100%,rgba(163,194,242,.08),transparent 60%);pointer-events:none}
+.hero-in{position:relative;max-width:1320px;margin:0 auto;padding:clamp(28px,5vw,64px) clamp(16px,4vw,56px) clamp(24px,4vw,48px);display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(24px,4vw,56px);align-items:center}
+.hero-eyebrow{font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:.14em;color:#f2a65e;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.hero-eyebrow i{width:8px;height:8px;border-radius:50%;background:#ff5a4f;box-shadow:0 0 0 4px rgba(255,90,79,.18);display:inline-block}
+#hero .np-logo{width:100%;max-width:560px;height:auto;display:block;margin:22px 0 18px;color:#ece6da}
+.hero-sub{font-family:Unbounded,'Arial Black',sans-serif;font-weight:500;font-size:clamp(17px,1.7vw,22px);margin:0 0 12px;color:#ece6da}
+.hero-lead{font-family:'Golos Text',Inter,sans-serif;font-size:clamp(14px,1.15vw,16px);line-height:1.55;color:#c9c3b6;margin:0 0 22px;max-width:520px}
+.hero-facts{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px}
+.hero-facts span{font-family:'Golos Text',Inter,sans-serif;font-size:13px;border:1px solid rgba(236,230,218,.18);border-radius:999px;padding:6px 12px;color:#ece6da}
+.hero-facts b{color:#f2a65e;font-weight:600}
+.hero-btns{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.hero-btns .btn{height:42px;padding:0 18px;font-size:14px;border-radius:10px}
+.hero-down{display:inline-flex;align-items:center;gap:8px;margin-top:26px;color:#8f8b83;font-size:13px;text-decoration:none;font-family:'Golos Text',Inter,sans-serif}
+.hero-down:hover{color:#ece6da}
+.reel{position:relative;aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:#000;border:1px solid rgba(236,230,218,.14);box-shadow:0 30px 80px rgba(0,0,0,.55)}
+.reel iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.reel-cap{display:flex;justify-content:space-between;margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.12em;color:#8f8b83;text-transform:uppercase}
+.reel-card{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-decoration:none;color:#ece6da;background:radial-gradient(circle at 50% 45%,#2a2215,#0c0c0e 70%);font-family:'Golos Text',Inter,sans-serif;font-size:15px}
+.reel-card .play{width:74px;height:74px;border-radius:50%;background:#f2a65e;display:flex;align-items:center;justify-content:center;color:#111214}
+@media (max-width:900px){.hero-in{grid-template-columns:1fr}}
 #promo .pt{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#e9e4d6;font-size:13px}
 #promo .pt b{font-weight:600;color:#fff}
 #promo .pt span{color:#b9ae92}
@@ -167,9 +190,26 @@ details.cheat p{margin:0;line-height:1.55}
 </script>
 </head>
 <body>
+<header id="hero">
+  <div class="hero-in">
+    <div>
+      <div class="hero-eyebrow"><i></i>Набор открыт</div>
+      <svg class="np-logo" xmlns="http://www.w3.org/2000/svg" viewBox="5.5 -24.3 1323.7 115.3" role="img" aria-label="Нейропродакшн"><path d="M6.5 0.0H29.8V75.0H6.5ZM64.9 0.0H88.2V75.0H64.9ZM19.6 26.5H74.3V47.0H19.6Z M168.7 29.2V45.7H113.0V29.2ZM128.9 37.5 124.2 66.5 115.1 56.4H172.2V75.0H101.1L106.7 37.5L101.1 0.0H171.7V18.5H115.1L124.2 8.5Z M185.5 75.0V0.0H208.5V62.5L202.3 61.1L241.6 0.0H272.0V75.0H249.0V11.0L255.1 12.5L215.0 75.0ZM201.6 -23.3H219.7Q221.0 -20.3 223.2 -18.7Q225.5 -17.2 228.6 -17.2Q231.8 -17.2 234.0 -18.7Q236.3 -20.3 237.5 -23.3H255.7Q253.3 -13.3 246.1 -8.9Q238.9 -4.5 228.6 -4.5Q218.5 -4.5 211.2 -8.9Q204.0 -13.3 201.6 -23.3Z M329.9 0.0Q339.7 0.0 346.7 3.2Q353.8 6.5 357.5 12.5Q361.2 18.5 361.2 26.5Q361.2 34.5 357.5 40.5Q353.8 46.5 346.7 49.9Q339.7 53.2 329.9 53.2H297.8V34.8H328.4Q332.8 34.8 335.2 32.5Q337.7 30.4 337.7 26.5Q337.7 22.5 335.2 20.4Q332.8 18.4 328.4 18.4H299.8L310.3 7.7V75.0H287.0V0.0Z M413.5 76.7Q400.0 76.7 389.8 71.8Q379.7 66.9 374.0 58.1Q368.4 49.3 368.4 37.5Q368.4 25.6 374.0 16.8Q379.7 8.0 389.8 3.1Q400.0 -1.7 413.5 -1.7Q427.0 -1.7 437.1 3.1Q447.3 8.0 452.9 16.8Q458.6 25.6 458.6 37.5Q458.6 49.3 452.9 58.1Q447.3 66.9 437.1 71.8Q427.0 76.7 413.5 76.7ZM413.5 56.0Q420.2 56.0 425.0 53.7Q429.9 51.5 432.5 47.3Q435.1 43.2 435.1 37.5Q435.1 31.7 432.5 27.6Q429.9 23.5 425.0 21.2Q420.2 19.0 413.5 19.0Q406.8 19.0 401.9 21.2Q397.1 23.5 394.5 27.6Q391.9 31.7 391.9 37.5Q391.9 43.2 394.5 47.3Q397.1 51.5 401.9 53.7Q406.8 56.0 413.5 56.0Z" fill="currentColor"/><path d="M497.3 -2.7H513.9L485.9 77.7H469.3Z" fill="#f2a65e"/><path d="M609.0 0.0V75.0H585.7V10.0L596.2 20.5H540.5L551.0 10.0V75.0H527.7V0.0Z M666.9 0.0Q676.7 0.0 683.7 3.2Q690.8 6.5 694.5 12.5Q698.2 18.5 698.2 26.5Q698.2 34.5 694.5 40.5Q690.8 46.5 683.7 49.9Q676.7 53.2 666.9 53.2H634.8V34.8H665.4Q669.8 34.8 672.2 32.5Q674.7 30.4 674.7 26.5Q674.7 22.5 672.2 20.4Q669.8 18.4 665.4 18.4H636.8L647.3 7.7V75.0H624.0V0.0Z M750.5 76.7Q737.0 76.7 726.8 71.8Q716.7 66.9 711.0 58.1Q705.4 49.3 705.4 37.5Q705.4 25.6 711.0 16.8Q716.7 8.0 726.8 3.1Q737.0 -1.7 750.5 -1.7Q764.0 -1.7 774.1 3.1Q784.3 8.0 789.9 16.8Q795.6 25.6 795.6 37.5Q795.6 49.3 789.9 58.1Q784.3 66.9 774.1 71.8Q764.0 76.7 750.5 76.7ZM750.5 56.0Q757.2 56.0 762.0 53.7Q766.9 51.5 769.5 47.3Q772.1 43.2 772.1 37.5Q772.1 31.7 769.5 27.6Q766.9 23.5 762.0 21.2Q757.2 19.0 750.5 19.0Q743.8 19.0 738.9 21.2Q734.1 23.5 731.5 27.6Q728.9 31.7 728.9 37.5Q728.9 43.2 731.5 47.3Q734.1 51.5 738.9 53.7Q743.8 56.0 750.5 56.0Z M803.0 90.0V54.4H820.7L826.9 54.5H877.7L883.6 54.4H906.5V90.0H884.6V75.0H824.9V90.0ZM818.3 0.0H893.6V69.0H870.3V9.7L880.8 20.1H830.7L840.2 12.3Q841.1 16.6 841.2 20.6Q841.4 24.6 841.4 28.1Q841.4 39.6 839.3 47.3Q837.2 55.0 832.9 58.9Q828.6 62.8 822.2 62.8L812.5 54.8Q816.2 50.2 818.0 42.4Q819.9 34.5 819.9 23.2Q819.9 18.0 819.5 12.1Q819.1 6.3 818.3 0.0Z M934.2 61.5V42.9H985.6V61.5ZM975.7 0.0 1009.3 75.0H984.4L957.2 10.0H963.5L936.2 75.0H911.4L944.9 0.0Z M1017.7 75.0V0.0H1040.8V56.7L1034.8 51.8L1074.7 0.0H1099.1L1038.8 75.0ZM1053.6 39.9 1070.7 26.0 1100.2 75.0H1073.8Z M1218.8 54.4 1208.3 64.9V0.0H1231.6V75.0H1107.9V0.0H1131.2V64.9L1120.7 54.4H1168.1L1158.1 64.9V0.0H1181.4V64.9L1171.2 54.4Z M1246.5 0.0H1269.8V75.0H1246.5ZM1304.9 0.0H1328.2V75.0H1304.9ZM1259.6 26.5H1314.3V47.0H1259.6Z" fill="currentColor"/></svg>
+      <p class="hero-sub">Курс Альберта Закирова</p>
+      <p class="hero-lead">Продающие рекламные и fashion-ролики в нейросетях: режиссура, ракурсы, свет, камера, монтаж и работа с клиентом. На реальных коммерческих кейсах.</p>
+      <div class="hero-facts"><span><b>4</b> недели</span><span><b>4</b> ролика в портфолио</span><span>урок <b>3–4</b> часа в неделю</span></div>
+      <div class="hero-btns"><button class="btn ai" id="heroLead">Записаться на курс</button><a class="btn" id="heroProg" href="#" target="_blank" rel="noopener">Программа курса →</a></div>
+      <a class="hero-down" href="#app">↓ Бесплатный редактор превиза — попробуйте ниже</a>
+    </div>
+    <div>
+      <div class="reel" id="reel"></div>
+      <div class="reel-cap"><span>Шоурил 2026</span><span>@albertzakirov</span></div>
+    </div>
+  </div>
+</header>
 <div id="app">
   <div id="promo">
-    <span class="pl">НЕЙРОПРОДАКШН</span>
+    <span class="pl"><svg class="np-logo" xmlns="http://www.w3.org/2000/svg" viewBox="5.5 -24.3 1323.7 115.3" role="img" aria-label="Нейропродакшн"><path d="M6.5 0.0H29.8V75.0H6.5ZM64.9 0.0H88.2V75.0H64.9ZM19.6 26.5H74.3V47.0H19.6Z M168.7 29.2V45.7H113.0V29.2ZM128.9 37.5 124.2 66.5 115.1 56.4H172.2V75.0H101.1L106.7 37.5L101.1 0.0H171.7V18.5H115.1L124.2 8.5Z M185.5 75.0V0.0H208.5V62.5L202.3 61.1L241.6 0.0H272.0V75.0H249.0V11.0L255.1 12.5L215.0 75.0ZM201.6 -23.3H219.7Q221.0 -20.3 223.2 -18.7Q225.5 -17.2 228.6 -17.2Q231.8 -17.2 234.0 -18.7Q236.3 -20.3 237.5 -23.3H255.7Q253.3 -13.3 246.1 -8.9Q238.9 -4.5 228.6 -4.5Q218.5 -4.5 211.2 -8.9Q204.0 -13.3 201.6 -23.3Z M329.9 0.0Q339.7 0.0 346.7 3.2Q353.8 6.5 357.5 12.5Q361.2 18.5 361.2 26.5Q361.2 34.5 357.5 40.5Q353.8 46.5 346.7 49.9Q339.7 53.2 329.9 53.2H297.8V34.8H328.4Q332.8 34.8 335.2 32.5Q337.7 30.4 337.7 26.5Q337.7 22.5 335.2 20.4Q332.8 18.4 328.4 18.4H299.8L310.3 7.7V75.0H287.0V0.0Z M413.5 76.7Q400.0 76.7 389.8 71.8Q379.7 66.9 374.0 58.1Q368.4 49.3 368.4 37.5Q368.4 25.6 374.0 16.8Q379.7 8.0 389.8 3.1Q400.0 -1.7 413.5 -1.7Q427.0 -1.7 437.1 3.1Q447.3 8.0 452.9 16.8Q458.6 25.6 458.6 37.5Q458.6 49.3 452.9 58.1Q447.3 66.9 437.1 71.8Q427.0 76.7 413.5 76.7ZM413.5 56.0Q420.2 56.0 425.0 53.7Q429.9 51.5 432.5 47.3Q435.1 43.2 435.1 37.5Q435.1 31.7 432.5 27.6Q429.9 23.5 425.0 21.2Q420.2 19.0 413.5 19.0Q406.8 19.0 401.9 21.2Q397.1 23.5 394.5 27.6Q391.9 31.7 391.9 37.5Q391.9 43.2 394.5 47.3Q397.1 51.5 401.9 53.7Q406.8 56.0 413.5 56.0Z" fill="currentColor"/><path d="M497.3 -2.7H513.9L485.9 77.7H469.3Z" fill="#f2a65e"/><path d="M609.0 0.0V75.0H585.7V10.0L596.2 20.5H540.5L551.0 10.0V75.0H527.7V0.0Z M666.9 0.0Q676.7 0.0 683.7 3.2Q690.8 6.5 694.5 12.5Q698.2 18.5 698.2 26.5Q698.2 34.5 694.5 40.5Q690.8 46.5 683.7 49.9Q676.7 53.2 666.9 53.2H634.8V34.8H665.4Q669.8 34.8 672.2 32.5Q674.7 30.4 674.7 26.5Q674.7 22.5 672.2 20.4Q669.8 18.4 665.4 18.4H636.8L647.3 7.7V75.0H624.0V0.0Z M750.5 76.7Q737.0 76.7 726.8 71.8Q716.7 66.9 711.0 58.1Q705.4 49.3 705.4 37.5Q705.4 25.6 711.0 16.8Q716.7 8.0 726.8 3.1Q737.0 -1.7 750.5 -1.7Q764.0 -1.7 774.1 3.1Q784.3 8.0 789.9 16.8Q795.6 25.6 795.6 37.5Q795.6 49.3 789.9 58.1Q784.3 66.9 774.1 71.8Q764.0 76.7 750.5 76.7ZM750.5 56.0Q757.2 56.0 762.0 53.7Q766.9 51.5 769.5 47.3Q772.1 43.2 772.1 37.5Q772.1 31.7 769.5 27.6Q766.9 23.5 762.0 21.2Q757.2 19.0 750.5 19.0Q743.8 19.0 738.9 21.2Q734.1 23.5 731.5 27.6Q728.9 31.7 728.9 37.5Q728.9 43.2 731.5 47.3Q734.1 51.5 738.9 53.7Q743.8 56.0 750.5 56.0Z M803.0 90.0V54.4H820.7L826.9 54.5H877.7L883.6 54.4H906.5V90.0H884.6V75.0H824.9V90.0ZM818.3 0.0H893.6V69.0H870.3V9.7L880.8 20.1H830.7L840.2 12.3Q841.1 16.6 841.2 20.6Q841.4 24.6 841.4 28.1Q841.4 39.6 839.3 47.3Q837.2 55.0 832.9 58.9Q828.6 62.8 822.2 62.8L812.5 54.8Q816.2 50.2 818.0 42.4Q819.9 34.5 819.9 23.2Q819.9 18.0 819.5 12.1Q819.1 6.3 818.3 0.0Z M934.2 61.5V42.9H985.6V61.5ZM975.7 0.0 1009.3 75.0H984.4L957.2 10.0H963.5L936.2 75.0H911.4L944.9 0.0Z M1017.7 75.0V0.0H1040.8V56.7L1034.8 51.8L1074.7 0.0H1099.1L1038.8 75.0ZM1053.6 39.9 1070.7 26.0 1100.2 75.0H1073.8Z M1218.8 54.4 1208.3 64.9V0.0H1231.6V75.0H1107.9V0.0H1131.2V64.9L1120.7 54.4H1168.1L1158.1 64.9V0.0H1181.4V64.9L1171.2 54.4Z M1246.5 0.0H1269.8V75.0H1246.5ZM1304.9 0.0H1328.2V75.0H1304.9ZM1259.6 26.5H1314.3V47.0H1259.6Z" fill="currentColor"/></svg></span>
     <div class="pt"><b>Курс Альберта Закирова</b> — продающие рекламные и fashion-ролики в нейросетях. Четыре недели, четыре ролика. <span>Редактор превиза — бесплатно, из инструментов курса.</span></div>
     <a class="btn small ghost" id="courseLink" href="#" target="_blank" rel="noopener">Программа курса →</a>
     <button class="btn small ai" id="leadBtn">Записаться</button>
@@ -2083,6 +2123,14 @@ const COURSE_URL = 'https://albertzakirov-ai.github.io/neuroprod/';
 const LEADS_URL = 'https://script.google.com/macros/s/AKfycbzDslx2dyuCcTj0dmWpvcoXEZ8GKUaryKXVzGARtA3P3Cc2Fg7hSoyB_N-mZcJzzZwvSg/exec';
 const TG_URL = 'https://t.me/albertzakirov';
 $('#courseLink').href = COURSE_URL;
+$('#heroProg').href = COURSE_URL;
+$('#heroLead').addEventListener('click', () => openLead('шапка сайта'));
+const REEL_ID = '18AHfThkEPmg8RPtAF3xxkiMmwlDJYZ0O';
+if (window.claude) {
+  $('#reel').innerHTML = `<a class="reel-card" href="https://drive.google.com/file/d/${REEL_ID}/view" target="_blank" rel="noopener"><span class="play"><svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15L19.5 12z"/></svg></span>Смотреть шоурил</a>`;
+} else {
+  $('#reel').innerHTML = `<iframe src="https://drive.google.com/file/d/${REEL_ID}/preview" allow="autoplay; fullscreen" allowfullscreen loading="lazy" title="Шоурил Альберта Закирова"></iframe>`;
+}
 $('#leadBtn').addEventListener('click', () => openLead('шапка'));
 function openLead(source) {
   showModal(`<h3>Курс «Нейропродакшн» — Альберт Закиров</h3>
