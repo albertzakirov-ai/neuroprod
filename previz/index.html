@@ -49,6 +49,9 @@ select{padding-right:4px;cursor:pointer}
 input[type=number]{font-family:'JetBrains Mono',monospace;font-size:12px;width:100%}
 .xyz input[type=number]::-webkit-inner-spin-button,.xyz input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 .xyz input[type=number]{-moz-appearance:textfield;appearance:textfield;padding:0 5px}
+input.scrub{cursor:ew-resize}
+input.scrub:focus{cursor:text}
+body.scrubbing,body.scrubbing *{cursor:ew-resize!important;user-select:none}
 input:focus,select:focus{outline:none;border-color:#5b6170}
 input[type=color]{width:34px;height:28px;padding:2px;border:1px solid var(--line);border-radius:6px;background:#131417;cursor:pointer;flex-shrink:0}
 input[type=range]{width:100%;accent-color:var(--accent)}
@@ -355,6 +358,14 @@ const edTarget = controls.target.clone();
 const transform = new TransformControls(edCam, renderer.domElement);
 transform.setSize(0.9);
 scene.add(transform);
+const yawGizmo = new TransformControls(edCam, renderer.domElement);
+yawGizmo.setMode('rotate'); yawGizmo.showX = false; yawGizmo.showZ = false; yawGizmo.setSize(1.55);
+scene.add(yawGizmo);
+function syncYaw() {
+  const want = transform.object && transform.mode === 'translate' && selected !== 'cam' ? transform.object : null;
+  if (want && yawGizmo.object !== want) yawGizmo.attach(want);
+  else if (!want && yawGizmo.object) yawGizmo.detach();
+}
 
 // ---------- shapes
 function buildShape(type, mat) {
@@ -520,11 +531,12 @@ function select(id, keepKey) {
   if (id === 'cam') { transform.attach(shotCam); if (transform.mode === 'scale') setTransformMode('translate'); }
   else if (id) transform.attach(objects.get(id).root);
   else transform.detach();
+  syncYaw();
   renderOutliner(); renderProps(); updatePaths(); drawTimeline();
 }
 function setTransformMode(m) {
   if (m === 'scale' && selected === 'cam') m = 'translate';
-  transform.setMode(m);
+  transform.setMode(m); syncYaw();
   document.querySelectorAll('#modeSeg button').forEach(b => b.classList.toggle('on', b.dataset.mode === m));
 }
 
@@ -583,7 +595,7 @@ function deleteSel() {
   if (!selected || selected === 'cam') return;
   const o = objects.get(selected);
   if (cam.lookAt === o.id) cam.lookAt = null;
-  transform.detach(); disposeObject(o); select(null); commit();
+  transform.detach(); yawGizmo.detach(); disposeObject(o); select(null); commit();
 }
 function camFromView() {
   shotCam.position.copy(edCam.position); shotCam.quaternion.copy(edCam.quaternion);
@@ -610,7 +622,7 @@ function load(json) {
   if (!d || !Array.isArray(d.objects) || !d.cam) throw new Error('bad');
   if (d.images) Object.assign(images, d.images);
   const prevSel = selected;
-  transform.detach();
+  transform.detach(); yawGizmo.detach();
   for (const o of [...objects.values()]) disposeObject(o);
   Object.assign(settings, { bgImg:null, floorVis:true }, d.settings || {});
   idSeq = d.idSeq || 1;
@@ -770,7 +782,37 @@ function applyBind(inp) {
   }
 }
 const el$ = s => document.querySelectorAll('#right ' + s);
+const SCRUB_STEP = { pos:0.02, rot:1, scl:0.01, sclu:0.01, focal:0.5 };
+function makeScrub(inp) {
+  inp.classList.add('scrub');
+  inp.title = 'Тяни влево-вправо, чтобы менять. Shift — быстрее, Alt — точнее. Клик — ввести число.';
+  let sx = 0, sv = 0, active = false, moved = false;
+  inp.addEventListener('pointerdown', e => {
+    if (document.activeElement === inp || e.button !== 0) return;
+    e.preventDefault(); sx = e.clientX; sv = parseFloat(inp.value) || 0; active = true; moved = false;
+    try { inp.setPointerCapture(e.pointerId); } catch (err) {}
+  });
+  inp.addEventListener('pointermove', e => {
+    if (!active) return;
+    const dx = e.clientX - sx;
+    if (!moved && Math.abs(dx) < 3) return;
+    if (!moved) { moved = true; document.body.classList.add('scrubbing'); }
+    const k = e.shiftKey ? 10 : (e.altKey ? 0.1 : 1);
+    let v = sv + dx * (SCRUB_STEP[inp.dataset.bind.split('.')[0]] || 0.05) * k;
+    if (inp.dataset.bind.startsWith('scl')) v = Math.max(0.01, v);
+    if (inp.dataset.bind === 'focal') v = Math.max(8, Math.min(400, v));
+    inp.value = fmt(v); applyBind(inp);
+    if (inp.dataset.bind === 'focal') el$('[data-bind="focal"]').forEach(x => { if (x !== inp) x.value = fmt(v); });
+  });
+  const end = e => {
+    if (!active) return; active = false; document.body.classList.remove('scrubbing');
+    try { inp.releasePointerCapture(e.pointerId); } catch (err) {}
+    if (moved) afterEdit(false); else { inp.focus(); inp.select(); }
+  };
+  inp.addEventListener('pointerup', end); inp.addEventListener('pointercancel', end);
+}
 function wireProps() {
+  el$('input[type=number][data-bind]').forEach(makeScrub);
   el$('[data-bind]').forEach(inp => {
     inp.addEventListener('input', () => applyBind(inp));
     inp.addEventListener('change', () => { applyBind(inp); afterEdit(false); });
@@ -957,6 +999,7 @@ function setVis(mode) {
   camProxy.visible = mode === 'editor';
   selBox.visible = mode !== 'clean' && !!selected && selected !== 'cam';
   transform.visible = mode !== 'clean' && !!transform.object;
+  yawGizmo.visible = mode !== 'clean' && !!yawGizmo.object;
   grid.visible = mode === 'editor' ? settings.grid : settings.gridInShot;
   floor.material = (mode === 'editor' || settings.floorVis) ? floorMat : shadowMat;
   const bt = mode !== 'editor' && settings.bgImg ? getTex(settings.bgImg) : null;
@@ -981,8 +1024,8 @@ function setViewMode(m) {
   if (m === viewMode) return;
   if (viewMode === 'editor') edTarget.copy(controls.target);
   viewMode = m;
-  if (m === 'shot') { controls.object = shotCam; resetShotTarget(); transform.camera = displayCam; }
-  else { controls.object = edCam; controls.target.copy(edTarget); transform.camera = edCam; controls.update(); }
+  if (m === 'shot') { controls.object = shotCam; resetShotTarget(); transform.camera = displayCam; yawGizmo.camera = displayCam; }
+  else { controls.object = edCam; controls.target.copy(edTarget); transform.camera = edCam; yawGizmo.camera = edCam; controls.update(); }
   syncUiButtons(); updateHint();
 }
 function resetShotTarget() {
@@ -1038,7 +1081,7 @@ new ResizeObserver(drawTimeline).observe(tlWrap);
 // ---------- picking
 const ray = new THREE.Raycaster();
 let downPos = null, downOnGizmo = false;
-renderer.domElement.addEventListener('pointerdown', e => { downPos = [e.clientX, e.clientY]; downOnGizmo = transform.axis !== null || transform.dragging; });
+renderer.domElement.addEventListener('pointerdown', e => { downPos = [e.clientX, e.clientY]; downOnGizmo = transform.axis !== null || transform.dragging || yawGizmo.axis !== null || yawGizmo.dragging; });
 renderer.domElement.addEventListener('pointerup', e => {
   if (!downPos || recording) return;
   const moved = Math.hypot(e.clientX - downPos[0], e.clientY - downPos[1]);
@@ -1056,11 +1099,17 @@ renderer.domElement.addEventListener('pointerup', e => {
   select(n ? (n.userData.isCam ? 'cam' : n.userData.objId) : null);
 });
 
-transform.addEventListener('dragging-changed', e => {
+const onGizmoDrag = (other) => e => {
   controls.enabled = !e.value;
+  other.enabled = !e.value;
   gizmoDragging = e.value;
   if (!e.value) { if (selected === 'cam') { afterCamEdit(); } else afterEdit(true); }
-});
+};
+transform.addEventListener('dragging-changed', onGizmoDrag(yawGizmo));
+yawGizmo.addEventListener('dragging-changed', onGizmoDrag(transform));
+transform.addEventListener('mouseDown', () => { yawGizmo.enabled = false; });
+transform.addEventListener('mouseUp', () => { yawGizmo.enabled = true; });
+yawGizmo.addEventListener('objectChange', () => { if (!playing) refreshProps(); });
 transform.addEventListener('objectChange', () => { if (!playing) refreshProps(); if (selected === 'cam' || gizmoDragging) updatePathsThrottled(); });
 let pathT = 0; function updatePathsThrottled() { const n = performance.now(); if (n - pathT > 60) { pathT = n; updatePaths(); } }
 controls.addEventListener('start', () => { if (viewMode === 'shot') { resetShotTarget(); shotOrbiting = true; } });
@@ -1631,7 +1680,7 @@ function directText(raw, mode) {
   const dm = text.match(new RegExp('(?:ролик|шот|видео|сцена|длительност[а-яa-z0-9_]*|длится|хронометраж|всего|продолжительност[а-яa-z0-9_]*)[^.\\d]{0,24}?' + NUM + '\\s*' + SEC));
   if (dm) { D = +dm[1]; text = text.replace(dm[0], ' '); }
   if (mode === 'new') {
-    transform.detach();
+    transform.detach(); yawGizmo.detach();
     for (const o of [...objects.values()]) disposeObject(o);
     cam.keys = []; cam.lookAt = null; setFocal(35);
     shotCam.position.set(0, 1.6, 7); shotCam.rotation.set(-4 * D2R, 0, 0, 'YXZ');
@@ -2050,6 +2099,10 @@ function openLead(source) {
     if (!name || !contact) { $('#leadStat').textContent = 'Заполните имя и контакт.'; return; }
     if (!fd.get('ok')) { $('#leadStat').textContent = 'Нужно согласие на обработку данных.'; return; }
     const btn = f.querySelector('[type=submit]'); btn.disabled = true; btn.textContent = 'Отправляю…';
+    if (window.claude) {
+      $('#leadStat').innerHTML = `Это версия внутри Claude — она не может отправлять заявки на сторонние сайты. Проверь форму на сайте: <a href="https://albertzakirov-ai.github.io/neuroprod/previz/" target="_blank" rel="noopener" style="color:var(--accent)">albertzakirov-ai.github.io/neuroprod/previz</a>`;
+      btn.textContent = 'Оставить заявку'; btn.disabled = false; return;
+    }
     if (!LEADS_URL) {
       $('#leadStat').innerHTML = `Приём заявок ещё настраивается — напишите Альберту напрямую: <a href="${TG_URL}" target="_blank" rel="noopener" style="color:var(--accent)">Telegram @albertzakirov</a>`;
       btn.textContent = 'Оставить заявку'; btn.disabled = false; return;
@@ -2068,7 +2121,7 @@ function openLead(source) {
 
 // ---------- demo scene
 function buildDemo() {
-  transform.detach();
+  transform.detach(); yawGizmo.detach();
   for (const o of [...objects.values()]) disposeObject(o);
   idSeq = 1; time = 0;
   const human = createObject({ type:'human', name:'Герой', color:'#ececec', pos:[0, 0, -3], rot:[0, 0, 0],
