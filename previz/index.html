@@ -774,6 +774,7 @@ function renderProps() {
       ${xyzRow('Позиция', 'pos', 0.1)}
       ${xyzRow('Поворот', 'rot', 1)}
       <div class="axl"><span></span><span>наклон</span><span>панорама</span><span>завал</span></div>
+      ${cam.keys.length > 1 ? `<div class="row" style="margin-top:10px"><span class="l">На все ключи</span><div class="f chips"><span class="chip" data-all="tilt" title="Поставить текущий наклон во все ключи камеры">наклон</span><span class="chip" data-all="roll" title="Поставить текущий завал во все ключи">завал</span><span class="chip" data-all="height" title="Поставить текущую высоту во все ключи">высоту</span><span class="chip" data-all="focal" title="Поставить текущее фокусное во все ключи">фокусное</span></div></div>` : ''}
       <div class="btns"><button class="btn small" data-act="camfromview">Камера = вид редактора</button></div>
       <div class="note">${cam.lookAt ? 'Автотрекинг включён: камера сама держит объект в центре — задавай только путь.' : 'В режиме <b>Камера</b> двигай вид мышью или стрелками <span class="kbd">↑↓←→</span>, <span class="kbd">PgUp/PgDn</span> — выше/ниже.'}</div>
     </div>${animSection(cam)}`;
@@ -790,6 +791,7 @@ function renderProps() {
       ${xyzRow('Поворот', 'rot', 5)}
       ${xyzRow('Размер', 'scl', 0.1)}
       <div class="row"><span class="l">Общий</span><div class="f"><input type="number" step="0.1" data-bind="sclu"></div></div>
+      ${o.keys.length > 1 ? `<div class="row" style="margin-top:10px"><span class="l">На все ключи</span><div class="f chips"><span class="chip" data-all="tilt" title="Поставить текущий наклон во все ключи объекта">наклон</span><span class="chip" data-all="roll" title="Поставить текущий завал во все ключи">завал</span><span class="chip" data-all="height" title="Поставить текущую высоту во все ключи">высоту</span><span class="chip" data-all="scale" title="Поставить текущий размер во все ключи">размер</span></div></div>` : ''}
     </div>
     ${animSection(o)}
     <div class="ps"><div class="btns" style="margin-top:0"><button class="btn small" data-act="frame">Показать (F)</button><button class="btn small" data-act="dup">Дублировать</button><button class="btn small ghost danger" data-act="del">Удалить</button></div></div>`;
@@ -897,6 +899,7 @@ function wireProps() {
     cam.lookAt = s.value || null; aimCam();
     commit(); renderProps(); renderTrack();
   }));
+  el$('[data-all]').forEach(c => c.addEventListener('click', () => applyToAllKeys(c.dataset.all)));
   el$('[data-bb]').forEach(c => c.addEventListener('change', () => { const o = objects.get(selected); o.billboard = c.checked; if (!c.checked) o.root.rotation.y = 0; commit(); }));
   el$('[data-bgload]').forEach(b => b.addEventListener('click', () => $('#bgIn').click()));
   el$('[data-bgclear]').forEach(b => b.addEventListener('click', () => { settings.bgImg = null; commit(); renderProps(); }));
@@ -921,6 +924,23 @@ function refreshProps() {
     const k = tr && tr.keys[+c.dataset.kt];
     c.classList.toggle('on', !!k && Math.abs(k.t - time) < .5 / settings.fps);
   });
+}
+const ALL_LABEL = { tilt:'Наклон', roll:'Завал', height:'Высота', focal:'Фокусное', scale:'Размер' };
+function applyToAllKeys(what) {
+  const isCam = selected === 'cam';
+  const tr = isCam ? cam : objects.get(selected); if (!tr || tr.keys.length < 2) return;
+  const cur = isCam ? camPose() : objPose(tr);
+  for (const k of tr.keys) {
+    if (what === 'tilt') k.rot[0] = cur.rot[0];
+    else if (what === 'roll') k.rot[2] = cur.rot[2];
+    else if (what === 'height') k.pos[1] = cur.pos[1];
+    else if (what === 'focal' && isCam) k.focal = cur.focal;
+    else if (what === 'scale' && !isCam) k.scl = [...cur.scl];
+  }
+  applyTime(time); commit(); refreshProps();
+  const val = what === 'tilt' ? fmt(cur.rot[0]) + '°' : what === 'roll' ? fmt(cur.rot[2]) + '°' : what === 'height' ? fmt(cur.pos[1]) + ' м' : what === 'focal' ? Math.round(cur.focal) + ' мм' : fmt(cur.scl[0]);
+  toast(`${ALL_LABEL[what]} ${val} — во всех ${tr.keys.length} ключах`);
+  if (isCam && cam.lookAt && (what === 'tilt' || what === 'roll')) setTimeout(() => toast('Включён автотрекинг — он сам задаёт наклон. Выключи его, чтобы наклон из ключей работал'), 2400);
 }
 function frameSelected() {
   if (viewMode !== 'editor' || !selected) return;
