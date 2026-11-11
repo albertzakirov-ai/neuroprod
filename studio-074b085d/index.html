@@ -145,7 +145,8 @@ input[type=checkbox]{accent-color:var(--accent);width:15px;height:15px;margin:0;
 .hero-facts b{color:#f2a65e;font-weight:600}
 .hero-btns{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .hero-btns .btn{height:42px;padding:0 18px;font-size:14px;border-radius:10px}
-.hero-down{display:inline-flex;align-items:center;gap:8px;margin-top:26px;color:#8f8b83;font-size:13px;text-decoration:none;font-family:'Golos Text',Inter,sans-serif}
+.hero-note{margin:12px 0 0;font-family:'Golos Text',Inter,sans-serif;font-size:12.5px;color:#a49e92}
+.hero-down{display:inline-flex;align-items:center;gap:8px;margin-top:22px;color:#8f8b83;font-size:13px;text-decoration:none;font-family:'Golos Text',Inter,sans-serif}
 .hero-down:hover{color:#ece6da}
 .reel-side{justify-self:end;display:flex;flex-direction:column;align-items:flex-end;gap:10px;text-align:right}
 .reel-btn{display:inline-flex;align-items:center;gap:12px;text-decoration:none;color:#ece6da;font-family:'Golos Text',Inter,sans-serif;font-size:15px;background:rgba(17,18,20,.55);border:1px solid rgba(236,230,218,.22);border-radius:999px;padding:8px 18px 8px 8px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
@@ -211,7 +212,8 @@ details.cheat p{margin:0;line-height:1.55}
       <p class="hero-sub">Курс Альберта Закирова</p>
       <p class="hero-lead">Продающие рекламные и fashion-ролики в нейросетях: режиссура, ракурсы, свет, камера, монтаж и работа с клиентом. На реальных коммерческих кейсах.</p>
       <div class="hero-facts"><span><b>4</b> недели</span><span><b>4</b> ролика в портфолио</span><span>урок <b>3–4</b> часа в неделю</span></div>
-      <div class="hero-btns"><button class="btn ai" id="heroLead">Записаться на курс</button><a class="btn" id="heroProg" href="#" target="_blank" rel="noopener">Программа курса →</a></div>
+      <div class="hero-btns"><button class="btn ai" id="heroLead">Узнать о курсе</button><a class="btn" id="heroProg" href="#" target="_blank" rel="noopener">Программа курса →</a></div>
+      <p class="hero-note">Ни к чему не обязывает: оставьте контакт — Альберт напишет и ответит на вопросы.</p>
       <a class="hero-down" href="#app">↓ Бесплатный редактор превиза — попробуйте ниже</a>
     </div>
     <div class="reel-side">
@@ -2167,16 +2169,16 @@ const REEL_ID = '18AHfThkEPmg8RPtAF3xxkiMmwlDJYZ0O';
 $('#reelBtn').href = `https://drive.google.com/file/d/${REEL_ID}/view`;
 { const v = document.querySelector('#hero video.bg'); if (v) { v.muted = true; const p = v.play(); if (p && p.catch) p.catch(() => {}); } }
 function openLead(source) {
-  showModal(`<h3>Курс «Нейропродакшн» — Альберт Закиров</h3>
-    <p>Продающие рекламные и fashion-ролики в нейросетях: от идеи и режиссуры до света, монтажа и брифа клиента.</p>
+  showModal(`<h3>Узнать о курсе «Нейропродакшн»</h3>
+    <p>Оставьте контакт — Альберт напишет вам сам, расскажет про даты, формат и стоимость и ответит на вопросы. Это не запись и не оплата, ни к чему не обязывает.</p>
     <div class="pitch"><div><b>4 недели</b>урок раз в неделю, 3–4 часа: теория, кейсы, генерация вживую</div><div><b>4 ролика</b>домашний ролик-кейс каждую неделю — с разбором на уроке</div><div><b>Без мощного ПК</b>всё считается в облаке, подписки помогу подключить</div></div>
     <form class="lead" id="leadForm">
       <label>Имя<input type="text" name="name" required maxlength="80" autocomplete="name"></label>
       <label>Telegram или телефон<input type="text" name="contact" required maxlength="80" placeholder="@username или +7…"></label>
-      <label>Кто вы<select name="role"><option>Видеограф / режиссёр</option><option>Дизайнер / SMM</option><option>Маркетолог / предприниматель</option><option>Только начинаю</option><option>Другое</option></select></label>
+      <label>Кто вы <span style="opacity:.6">— по желанию</span><select name="role"><option value="">Не указывать</option><option>Видеограф / режиссёр</option><option>Дизайнер / SMM</option><option>Маркетолог / предприниматель</option><option>Только начинаю</option><option>Другое</option></select></label>
       <label class="chk"><input type="checkbox" name="ok" required> Согласен(на) на обработку персональных данных, чтобы со мной связались по поводу курса</label>
       <div class="pstatus" id="leadStat"></div>
-      <div class="mrow"><a class="btn ghost" href="${COURSE_URL}" target="_blank" rel="noopener" style="text-decoration:none">Программа курса →</a><span class="grow"></span><button class="btn" type="button" data-m="close">Закрыть</button><button class="btn ai" type="submit">Оставить заявку</button></div>
+      <div class="mrow"><a class="btn ghost" href="${COURSE_URL}" target="_blank" rel="noopener" style="text-decoration:none">Программа курса →</a><span class="grow"></span><button class="btn" type="button" data-m="close">Закрыть</button><button class="btn ai" type="submit">Хочу узнать подробнее</button></div>
     </form>`, { close: hideModal });
   const f = $('#leadForm');
   f.addEventListener('submit', async e => {
@@ -2188,20 +2190,20 @@ function openLead(source) {
     const btn = f.querySelector('[type=submit]'); btn.disabled = true; btn.textContent = 'Отправляю…';
     if (window.claude) {
       $('#leadStat').innerHTML = `Это версия внутри Claude — она не может отправлять заявки на сторонние сайты. Проверь форму на сайте: <a href="https://albertzakirov-ai.github.io/neuroprod/previz/" target="_blank" rel="noopener" style="color:var(--accent)">albertzakirov-ai.github.io/neuroprod/previz</a>`;
-      btn.textContent = 'Оставить заявку'; btn.disabled = false; return;
+      btn.textContent = 'Хочу узнать подробнее'; btn.disabled = false; return;
     }
     if (!LEADS_URL) {
       $('#leadStat').innerHTML = `Приём заявок ещё настраивается — напишите Альберту напрямую: <a href="${TG_URL}" target="_blank" rel="noopener" style="color:var(--accent)">Telegram @albertzakirov</a>`;
-      btn.textContent = 'Оставить заявку'; btn.disabled = false; return;
+      btn.textContent = 'Хочу узнать подробнее'; btn.disabled = false; return;
     }
     try {
       const body = new URLSearchParams({ name, contact, role:String(fd.get('role') || ''), source:'previz · ' + source, page:location.href.slice(0, 200), ts:new Date().toISOString() });
       await fetch(LEADS_URL, { method:'POST', mode:'no-cors', body });
       try { ui.leadSent = true; persist(); } catch (e2) {}
-      f.innerHTML = `<p style="font-size:15px">Спасибо, ${esc(name)}! Альберт свяжется с вами в ближайшее время.</p><div class="mrow"><a class="btn ghost" href="${COURSE_URL}" target="_blank" rel="noopener" style="text-decoration:none">Посмотреть программу →</a><button class="btn primary" type="button" data-m="close">Вернуться в редактор</button></div>`;
+      f.innerHTML = `<p style="font-size:15px">Спасибо, ${esc(name)}! Альберт напишет вам в ближайшее время — можно спокойно спросить всё, что интересно.</p><div class="mrow"><a class="btn ghost" href="${COURSE_URL}" target="_blank" rel="noopener" style="text-decoration:none">Посмотреть программу →</a><button class="btn primary" type="button" data-m="close">Вернуться в редактор</button></div>`;
     } catch (err) {
       $('#leadStat').innerHTML = `Не получилось отправить. Напишите напрямую: <a href="${TG_URL}" target="_blank" rel="noopener" style="color:var(--accent)">Telegram @albertzakirov</a>`;
-      btn.textContent = 'Оставить заявку'; btn.disabled = false;
+      btn.textContent = 'Хочу узнать подробнее'; btn.disabled = false;
     }
   });
 }
