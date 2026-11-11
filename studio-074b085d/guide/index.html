@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Гайд по редактору превиза · Нейропродакшн</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#111214;--ink2:#18191c;--ink3:#212328;--paper:#ece6da;--mute:#8f8b83;--line:rgba(236,230,218,.13);--tung:#f2a65e;--day:#a3c2f2;--rec:#ff5a4f}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--ink);color:var(--paper);font:16px/1.6 "Golos Text",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--tung)}
+.wrap{max-width:980px;margin:0 auto;padding:0 clamp(16px,4vw,40px)}
+header.top{border-bottom:1px solid var(--line);padding:18px 0}
+header.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.np-logo{height:16px;width:auto;color:var(--paper);display:block}
+.mono{font-family:"JetBrains Mono",monospace;letter-spacing:.12em;text-transform:uppercase;font-size:11.5px;color:var(--tung)}
+.hero{padding:clamp(40px,7vw,80px) 0 28px}
+h1{font-family:Unbounded,sans-serif;font-weight:700;font-size:clamp(28px,4.6vw,48px);line-height:1.12;margin:14px 0 18px;letter-spacing:-.01em}
+h2{font-family:Unbounded,sans-serif;font-weight:500;font-size:clamp(21px,2.6vw,28px);line-height:1.2;margin:0 0 16px}
+h2 .n{color:var(--tung);margin-right:10px}
+h3{font-size:18px;margin:26px 0 8px;font-weight:600}
+.lead{font-size:clamp(16px,1.5vw,18.5px);color:#cfc9bc;max-width:720px}
+section{padding:44px 0;border-top:1px solid var(--line)}
+p{margin:0 0 14px}
+.muted{color:var(--mute)}
+.btn{display:inline-flex;align-items:center;gap:8px;height:46px;padding:0 20px;border-radius:12px;background:var(--tung);color:#1a1206;font-weight:600;text-decoration:none;font-size:15px}
+.btn.ghost{background:transparent;color:var(--paper);border:1px solid var(--line)}
+.btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+figure{margin:22px 0;}
+figure img{width:100%;display:block;border-radius:12px;border:1px solid var(--line)}
+figcaption{font-size:13px;color:var(--mute);margin-top:8px}
+.shot{position:relative}
+.bd{position:absolute;transform:translate(-50%,0);min-width:26px;height:26px;padding:0 7px;border-radius:13px;background:var(--rec);color:#fff;font:600 13px/26px "Golos Text",sans-serif;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.6),0 0 0 2px #111214}
+.legend{display:grid;grid-template-columns:repeat(2,1fr);gap:10px 26px;margin-top:18px}
+.legend div{display:flex;gap:12px;align-items:flex-start}
+.legend b.k{flex-shrink:0;width:26px;height:26px;border-radius:13px;background:var(--rec);color:#fff;font-size:13px;display:flex;align-items:center;justify-content:center}
+.legend span{font-size:15px}
+.legend strong{color:#fff;font-weight:600}
+.steps{counter-reset:s;list-style:none;padding:0;margin:0;display:grid;gap:12px}
+.steps li{counter-increment:s;position:relative;padding:16px 18px 16px 62px;background:var(--ink2);border:1px solid var(--line);border-radius:12px}
+.steps li:before{content:counter(s);position:absolute;left:18px;top:14px;width:30px;height:30px;border-radius:50%;border:1px solid var(--tung);color:var(--tung);font-family:Unbounded,sans-serif;font-size:13px;display:flex;align-items:center;justify-content:center}
+.steps b{color:#fff}
+.kbd{font-family:"JetBrains Mono",monospace;font-size:12.5px;background:var(--ink3);border:1px solid #373a42;border-bottom-width:2px;border-radius:5px;padding:1px 6px;color:#e8e2d5;white-space:nowrap}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.card{background:var(--ink2);border:1px solid var(--line);border-radius:12px;padding:18px}
+.card h3{margin-top:0}
+.phr{font-family:"JetBrains Mono",monospace;font-size:13.5px;line-height:1.75;color:#e8e2d5}
+.phr div:before{content:"› ";color:var(--tung)}
+pre{background:#0c0d0f;border:1px solid var(--line);border-radius:12px;padding:16px 18px;overflow:auto;font:13.5px/1.6 "JetBrains Mono",monospace;color:#e8e2d5;white-space:pre-wrap;margin:10px 0 6px}
+.copy{float:right;margin:-4px 0 0 10px;background:var(--ink3);border:1px solid var(--line);color:var(--paper);border-radius:8px;padding:4px 10px;font:12px "Golos Text",sans-serif;cursor:pointer}
+table{width:100%;border-collapse:collapse;font-size:15px}
+td{padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+td:first-child{width:38%;white-space:nowrap}
+.tip{border-left:3px solid var(--tung);background:rgba(242,166,94,.07);padding:12px 16px;border-radius:0 10px 10px 0;margin:16px 0}
+.cta{background:radial-gradient(80% 120% at 100% 0%,rgba(242,166,94,.18),transparent 60%),var(--ink2);border:1px solid var(--line);border-radius:18px;padding:clamp(22px,4vw,40px);margin:10px 0 60px}
+footer{border-top:1px solid var(--line);padding:22px 0 40px;color:var(--mute);font-size:13px}
+@media (max-width:760px){.legend,.cols{grid-template-columns:1fr}td:first-child{white-space:normal}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap"><svg class="np-logo" xmlns="http://www.w3.org/2000/svg" viewBox="5.5 -24.3 1323.7 115.3" role="img" aria-label="Нейропродакшн"><path d="M6.5 0.0H29.8V75.0H6.5ZM64.9 0.0H88.2V75.0H64.9ZM19.6 26.5H74.3V47.0H19.6Z M168.7 29.2V45.7H113.0V29.2ZM128.9 37.5 124.2 66.5 115.1 56.4H172.2V75.0H101.1L106.7 37.5L101.1 0.0H171.7V18.5H115.1L124.2 8.5Z M185.5 75.0V0.0H208.5V62.5L202.3 61.1L241.6 0.0H272.0V75.0H249.0V11.0L255.1 12.5L215.0 75.0ZM201.6 -23.3H219.7Q221.0 -20.3 223.2 -18.7Q225.5 -17.2 228.6 -17.2Q231.8 -17.2 234.0 -18.7Q236.3 -20.3 237.5 -23.3H255.7Q253.3 -13.3 246.1 -8.9Q238.9 -4.5 228.6 -4.5Q218.5 -4.5 211.2 -8.9Q204.0 -13.3 201.6 -23.3Z M329.9 0.0Q339.7 0.0 346.7 3.2Q353.8 6.5 357.5 12.5Q361.2 18.5 361.2 26.5Q361.2 34.5 357.5 40.5Q353.8 46.5 346.7 49.9Q339.7 53.2 329.9 53.2H297.8V34.8H328.4Q332.8 34.8 335.2 32.5Q337.7 30.4 337.7 26.5Q337.7 22.5 335.2 20.4Q332.8 18.4 328.4 18.4H299.8L310.3 7.7V75.0H287.0V0.0Z M413.5 76.7Q400.0 76.7 389.8 71.8Q379.7 66.9 374.0 58.1Q368.4 49.3 368.4 37.5Q368.4 25.6 374.0 16.8Q379.7 8.0 389.8 3.1Q400.0 -1.7 413.5 -1.7Q427.0 -1.7 437.1 3.1Q447.3 8.0 452.9 16.8Q458.6 25.6 458.6 37.5Q458.6 49.3 452.9 58.1Q447.3 66.9 437.1 71.8Q427.0 76.7 413.5 76.7ZM413.5 56.0Q420.2 56.0 425.0 53.7Q429.9 51.5 432.5 47.3Q435.1 43.2 435.1 37.5Q435.1 31.7 432.5 27.6Q429.9 23.5 425.0 21.2Q420.2 19.0 413.5 19.0Q406.8 19.0 401.9 21.2Q397.1 23.5 394.5 27.6Q391.9 31.7 391.9 37.5Q391.9 43.2 394.5 47.3Q397.1 51.5 401.9 53.7Q406.8 56.0 413.5 56.0Z" fill="currentColor"/><path d="M497.3 -2.7H513.9L485.9 77.7H469.3Z" fill="#f2a65e"/><path d="M609.0 0.0V75.0H585.7V10.0L596.2 20.5H540.5L551.0 10.0V75.0H527.7V0.0Z M666.9 0.0Q676.7 0.0 683.7 3.2Q690.8 6.5 694.5 12.5Q698.2 18.5 698.2 26.5Q698.2 34.5 694.5 40.5Q690.8 46.5 683.7 49.9Q676.7 53.2 666.9 53.2H634.8V34.8H665.4Q669.8 34.8 672.2 32.5Q674.7 30.4 674.7 26.5Q674.7 22.5 672.2 20.4Q669.8 18.4 665.4 18.4H636.8L647.3 7.7V75.0H624.0V0.0Z M750.5 76.7Q737.0 76.7 726.8 71.8Q716.7 66.9 711.0 58.1Q705.4 49.3 705.4 37.5Q705.4 25.6 711.0 16.8Q716.7 8.0 726.8 3.1Q737.0 -1.7 750.5 -1.7Q764.0 -1.7 774.1 3.1Q784.3 8.0 789.9 16.8Q795.6 25.6 795.6 37.5Q795.6 49.3 789.9 58.1Q784.3 66.9 774.1 71.8Q764.0 76.7 750.5 76.7ZM750.5 56.0Q757.2 56.0 762.0 53.7Q766.9 51.5 769.5 47.3Q772.1 43.2 772.1 37.5Q772.1 31.7 769.5 27.6Q766.9 23.5 762.0 21.2Q757.2 19.0 750.5 19.0Q743.8 19.0 738.9 21.2Q734.1 23.5 731.5 27.6Q728.9 31.7 728.9 37.5Q728.9 43.2 731.5 47.3Q734.1 51.5 738.9 53.7Q743.8 56.0 750.5 56.0Z M803.0 90.0V54.4H820.7L826.9 54.5H877.7L883.6 54.4H906.5V90.0H884.6V75.0H824.9V90.0ZM818.3 0.0H893.6V69.0H870.3V9.7L880.8 20.1H830.7L840.2 12.3Q841.1 16.6 841.2 20.6Q841.4 24.6 841.4 28.1Q841.4 39.6 839.3 47.3Q837.2 55.0 832.9 58.9Q828.6 62.8 822.2 62.8L812.5 54.8Q816.2 50.2 818.0 42.4Q819.9 34.5 819.9 23.2Q819.9 18.0 819.5 12.1Q819.1 6.3 818.3 0.0Z M934.2 61.5V42.9H985.6V61.5ZM975.7 0.0 1009.3 75.0H984.4L957.2 10.0H963.5L936.2 75.0H911.4L944.9 0.0Z M1017.7 75.0V0.0H1040.8V56.7L1034.8 51.8L1074.7 0.0H1099.1L1038.8 75.0ZM1053.6 39.9 1070.7 26.0 1100.2 75.0H1073.8Z M1218.8 54.4 1208.3 64.9V0.0H1231.6V75.0H1107.9V0.0H1131.2V64.9L1120.7 54.4H1168.1L1158.1 64.9V0.0H1181.4V64.9L1171.2 54.4Z M1246.5 0.0H1269.8V75.0H1246.5ZM1304.9 0.0H1328.2V75.0H1304.9ZM1259.6 26.5H1314.3V47.0H1259.6Z" fill="currentColor"/></svg><a class="mono" href="../" style="text-decoration:none">Открыть редактор →</a></div></header>
+
+<main class="wrap">
+  <div class="hero">
+    <div class="mono">Гайд · Нейропродакшн</div>
+    <h1>Превиз за 10 минут: редактор болванок для Seedance</h1>
+    <p class="lead">Ставите простые фигуры, задаёте движение персонажа и камеры — мышкой или обычным текстом — и получаете видео-превиз. Его отдаёте в Seedance вместе с картинками локации, персонажа и машины, и нейросеть повторяет вашу камеру и движение. 3D уметь не нужно.</p>
+    <div class="btns"><a class="btn" href="../">Открыть редактор</a><a class="btn ghost" href="#start">Быстрый старт ↓</a></div>
+  </div>
+
+  <section id="ui">
+    <h2><span class="n">01</span>Что где на экране</h2>
+    <p class="muted">Редактор работает в браузере на компьютере. Ничего ставить не нужно, сцена сохраняется сама.</p>
+    <figure class="shot"><img src="guide-ui.jpg" alt="Интерфейс редактора превиза" loading="lazy"><span class="bd" style="left:3.70%;top:4.94%">1</span>
+<span class="bd" style="left:16.15%;top:4.94%">2</span>
+<span class="bd" style="left:30.87%;top:4.94%">3</span>
+<span class="bd" style="left:42.56%;top:4.83%">4</span>
+<span class="bd" style="left:51.37%;top:4.83%">5</span>
+<span class="bd" style="left:58.72%;top:4.94%">6</span>
+<span class="bd" style="left:90.81%;top:4.94%">7</span>
+<span class="bd" style="left:97.77%;top:4.94%">8</span>
+<span class="bd" style="left:0.97%;top:11.26%">9</span>
+<span class="bd" style="left:0.97%;top:44.15%">10</span>
+<span class="bd" style="left:80.97%;top:7.21%">11</span>
+<span class="bd" style="left:0.97%;top:78.84%">12</span></figure>
+    <div class="legend">
+      <div><b class="k">1</b><span><strong>Промпт</strong> — опишите шот словами, редактор сам расставит движение персонажа и камеры.</span></div>
+      <div><b class="k">2</b><span><strong>Двигать / Вращать / Масштаб</strong> — режимы для выделенного объекта (клавиши <span class="kbd">W</span> <span class="kbd">E</span> <span class="kbd">R</span>).</span></div>
+      <div><b class="k">3</b><span><strong>Редактор / Камера</strong> — вид со стороны или ровно то, что увидит зритель (<span class="kbd">C</span>).</span></div>
+      <div><b class="k">4</b><span><strong>Автотрекинг</strong> — камера всё время держит выбранный объект в центре кадра.</span></div>
+      <div><b class="k">5</b><span><strong>Формат кадра</strong> — 16:9, 9:16 для рилс, 1:1, 4:5, 2.39 кино.</span></div>
+      <div><b class="k">6</b><span><strong>Автоключ</strong> — любое изменение сразу записывается в ключ на текущем времени.</span></div>
+      <div><b class="k">7</b><span><strong>Кадр PNG</strong> — чистый кадр из камеры: для Nano Banana и раскадровки.</span></div>
+      <div><b class="k">8</b><span><strong>Запись</strong> — сохранить превиз видеофайлом MP4 для Seedance.</span></div>
+      <div><b class="k">9</b><span><strong>Добавить</strong> — фигуры: человек, авто, кубы для стен и зданий, плоскость, картинка.</span></div>
+      <div><b class="k">10</b><span><strong>Сцена</strong> — список объектов и камеры; клик — выделить.</span></div>
+      <div><b class="k">11</b><span><strong>Свойства</strong> — цвет, положение, поворот, фокусное камеры, скорость движения.</span></div>
+      <div><b class="k">12</b><span><strong>Таймлайн</strong> — время, длительность шота, ключи-ромбики (их можно тянуть).</span></div>
+    </div>
+    <div class="tip">Обведённая жёлтым картинка в углу — <b>окно камеры кадра</b>. Всё, что в нём, попадёт в превиз. Клик по нему открывает вид из камеры.</div>
+  </section>
+
+  <section id="start">
+    <h2><span class="n">02</span>Быстрый старт</h2>
+    <ol class="steps">
+      <li><b>Соберите сцену.</b> Слева нажмите «Человек», «Авто», «Куб». Тяните цветные стрелки, чтобы двигать, и кольца, чтобы поворачивать. Числа в правой панели можно тянуть мышкой влево-вправо.</li>
+      <li><b>Задайте начало движения.</b> Поставьте время на 0 (клавиша <span class="kbd">Home</span>) и нажмите <span class="kbd">K</span> — объект запомнит позицию.</li>
+      <li><b>Задайте конец.</b> Кликните по таймлайну на нужной секунде и переставьте объект. При включённом «Автоключе» ключ поставится сам — объект поедет из точки А в точку Б.</li>
+      <li><b>Настройте камеру.</b> Выберите «Камера кадра» в списке, включите автотрекинг на героя, задайте фокусное и так же ключами — путь камеры.</li>
+      <li><b>Проверьте и запишите.</b> <span class="kbd">Пробел</span> — воспроизведение, <span class="kbd">C</span> — посмотреть из камеры. Затем «● Запись» → «Скачать» — у вас MP4 превиза.</li>
+    </ol>
+  </section>
+
+  <section id="text">
+    <h2><span class="n">03</span>Сцена из текста — без мышки</h2>
+    <p>Нажмите <b>«✦ Промпт»</b>, опишите шот простыми фразами — по одному действию в предложении — и нажмите <b>«▶ Разобрать текст»</b>. Персонажей, которых нет в сцене, редактор добавит сам. После разбора появится карточка «Понял так»: что он сделал и что не распознал.</p>
+    <figure><img src="guide-prompt.jpg" alt="Окно промпта" loading="lazy"><figcaption>Окно промпта со шпаргалкой фраз</figcaption></figure>
+    <div class="cols">
+      <div class="card"><h3>Персонажи</h3><div class="phr"><div>девушка идёт на камеру 6 секунд</div><div>парень бежит влево 8 метров</div><div>машина едет мимо камеры</div><div>она поворачивается к камере</div><div>затем останавливается</div><div>герой идёт к машине</div></div></div>
+      <div class="card"><h3>Камера</h3><div class="phr"><div>камера стартует спереди на уровне глаз</div><div>облетает её слева и заходит за спину</div><div>облёт справа на 90 градусов</div><div>медленный наезд до крупного</div><div>сопровождает героя сбоку</div><div>кран вверх до 6 метров</div><div>зум с 35 до 85 мм</div></div></div>
+      <div class="card"><h3>Время</h3><div class="phr"><div>за 3 секунды</div><div>с 2 по 5 секунду</div><div>затем · одновременно</div><div>ролик 8 секунд</div></div></div>
+      <div class="card"><h3>Кадр</h3><div class="phr"><div>формат 9:16 / вертикаль</div><div>низкий ракурс · сверху</div><div>в профиль · три четверти</div><div>общий / средний / крупный план</div></div></div>
+    </div>
+    <div class="tip">Пишите как оператору: <b>кто</b> → <b>что делает</b> → <b>как движется камера</b> → <b>сколько длится</b>. Не понравилось — поправьте текст и разберите снова или нажмите <span class="kbd">Ctrl</span>+<span class="kbd">Z</span>.</div>
+    <figure><img src="guide-result.jpg" alt="Результат разбора текста" loading="lazy"><figcaption>Результат: путь камеры — жёлтая линия, карточка «Понял так» слева</figcaption></figure>
+  </section>
+
+  <section id="camera">
+    <h2><span class="n">04</span>Камера как у оператора</h2>
+    <table>
+      <tr><td><b>Автотрекинг</b></td><td>Список вверху. Камера сама держит объект в центре — вы задаёте только путь. Повернёте камеру кольцом — трекинг выключится сам.</td></tr>
+      <tr><td><b>Кольца поворота</b></td><td>Зелёное — панорама, красное — наклон, синее — завал горизонта.</td></tr>
+      <tr><td><b>Фокусное</b></td><td>14–24 мм — широкий, 35 — как глаз, 50 — портрет, 85–135 — сжатие и деталь. Меняется между ключами — получается зум.</td></tr>
+      <tr><td><b>«На все ключи»</b></td><td>Выставили наклон или фокусное на одном ключе — одной кнопкой переносите во все ключи камеры.</td></tr>
+      <tr><td><b>Вид из камеры</b></td><td><span class="kbd">C</span>, затем стрелки <span class="kbd">↑↓←→</span> — ехать, <span class="kbd">PgUp</span>/<span class="kbd">PgDn</span> — выше/ниже, колесо — наезд.</td></tr>
+      <tr><td><b>Скорость</b></td><td>«Разгон и торможение» — мягкий старт и стоп. «Ровно, плавные стыки» — без замедлений. «Линейно» — механически ровно.</td></tr>
+    </table>
+    <figure><img src="guide-shot.jpg" alt="Вид из камеры" loading="lazy"><figcaption>Вид из камеры: рамка кадра и сетка третей</figcaption></figure>
+  </section>
+
+  <section id="ai">
+    <h2><span class="n">05</span>Из превиза — в нейросети</h2>
+    <h3>Nano Banana: стартовый кадр</h3>
+    <p>Поставьте время на нужный момент и нажмите <b>«📷 Кадр PNG»</b>. Загрузите этот кадр в Nano Banana как референс композиции, а локацию, персонажа и машину — отдельными картинками.</p>
+    <pre><button class="copy" data-copy>Копировать</button>Первое изображение — схема кадра из 3D-болванок: возьми из него только композицию, ракурс камеры, высоту точки съёмки и расположение объектов. Серые фигуры не рисуй.
+Локация — со второго изображения, машина — с третьего, персонаж — с четвёртого (один лист с тремя ракурсами одного человека).
+Персонаж стоит ровно там, где манекен на схеме, спокойный и уверенный, лёгкая улыбка.
+Фотореалистичный рекламный кадр, мягкий естественный свет, глубокие натуральные тени, без HDR и свечения.</pre>
+    <h3>Seedance: видео по превизу</h3>
+    <p>Загрузите видео превиза и картинки. Порядок: превиз — видео, дальше локация, машина, персонаж. Теги пишите так, как их называет ваш Seedance: обычно <span class="kbd">@video1</span>, <span class="kbd">@image1</span>, <span class="kbd">@image2</span>…</p>
+    <pre><button class="copy" data-copy>Копировать</button>@video1 — черновой 3D-превиз. Бери из него ТОЛЬКО движение камеры и объектов: траекторию, ракурс, высоту, скорость и тайминг — кадр в кадр. Внешний вид из него не бери: никаких серых фигур, сетки и пустого фона.
+
+Манекен из @video1 — это персонаж с @image3 (один лист с тремя ракурсами одного человека): то же лицо, причёска, одежда, пропорции. Он движется точно по пути манекена, с естественным шагом и переносом веса.
+Блок-машина из @video1 — это машина с @image2: та же форма кузова, цвет, колёса и детали, без изменений.
+Окружение — локация с @image1, увиденная с ракурсов камеры из @video1.
+
+Эмоция персонажа: спокойный, уверенный, сосредоточенный взгляд, едва заметная полуулыбка.
+Фотореалистичная реклама, снято на кинокамеру, мягкий дневной свет, естественный моушен-блюр на движении.
+Один непрерывный кадр, без склеек, без текста и логотипов, без лишних людей, без морфинга.
+Звук: естественный фон локации, шаги, шум шин и мотора, без музыки.</pre>
+    <div class="tip"><b>Главное правило:</b> превиз держите простым, а реальные объекты давайте картинками. Если в результате проступает «серость» болванок — уберите из превиза стены и колонны, оставьте персонажа, машину и пол.</div>
+  </section>
+
+  <section id="keys">
+    <h2><span class="n">06</span>Горячие клавиши</h2>
+    <table>
+      <tr><td><span class="kbd">W</span> <span class="kbd">E</span> <span class="kbd">R</span></td><td>двигать · вращать · масштаб</td></tr>
+      <tr><td><span class="kbd">K</span></td><td>поставить ключ выделенному объекту</td></tr>
+      <tr><td><span class="kbd">Пробел</span></td><td>воспроизведение / пауза</td></tr>
+      <tr><td><span class="kbd">C</span></td><td>вид из камеры ↔ редактор</td></tr>
+      <tr><td><span class="kbd">F</span></td><td>показать выделенный объект</td></tr>
+      <tr><td><span class="kbd">Home</span> <span class="kbd">End</span> · <span class="kbd">←</span> <span class="kbd">→</span></td><td>в начало / в конец · на кадр назад / вперёд</td></tr>
+      <tr><td><span class="kbd">Ctrl</span>+<span class="kbd">Z</span> · <span class="kbd">Ctrl</span>+<span class="kbd">D</span></td><td>отменить · дублировать объект</td></tr>
+      <tr><td><span class="kbd">Delete</span></td><td>удалить объект или выделенный ключ</td></tr>
+    </table>
+  </section>
+
+  <section id="faq">
+    <h2><span class="n">07</span>Если что-то не так</h2>
+    <table>
+      <tr><td><b>Объект «прыгает» назад</b></td><td>Изменение не записалось в ключ. Включите «Автоключ» или нажмите <span class="kbd">K</span>.</td></tr>
+      <tr><td><b>Камера не поворачивается</b></td><td>Включён автотрекинг — он сам задаёт направление. Выключите его в списке вверху.</td></tr>
+      <tr><td><b>Не видно, что попадёт в кадр</b></td><td>Смотрите окно камеры в углу или нажмите <span class="kbd">C</span>.</td></tr>
+      <tr><td><b>Длительность шота</b></td><td>Поле «Длительность» под сценой, слева от FPS.</td></tr>
+      <tr><td><b>Вернуться к сцене позже</b></td><td>«Сохранить» — файл сцены; «Открыть» — загрузить его обратно.</td></tr>
+    </table>
+  </section>
+
+  <div class="cta">
+    <div class="mono">Курс Альберта Закирова</div>
+    <h2 style="margin-top:12px">Хотите, чтобы превизы превращались в рекламные ролики?</h2>
+    <p class="lead" style="font-size:16.5px">На курсе «Нейропродакшн» разбираем режиссуру, свет, камеру, монтаж и работу с клиентом — на реальных коммерческих кейсах. Четыре недели, четыре ролика в портфолио.</p>
+    <div class="btns"><a class="btn" href="https://albertzakirov-ai.github.io/neuroprod/">Программа курса</a><a class="btn ghost" href="../#hero">Узнать о курсе — ни к чему не обязывает</a></div>
+  </div>
+</main>
+<footer><div class="wrap">© Альберт Закиров · @albertzakirov · Нейропродакшн</div></footer>
+<script>
+document.querySelectorAll('[data-copy]').forEach(b=>b.addEventListener('click',async()=>{const t=b.parentElement.innerText.replace(b.innerText,'').trim();try{await navigator.clipboard.writeText(t);b.textContent='Скопировано';setTimeout(()=>b.textContent='Копировать',1500)}catch(e){}}));
+</script>
+</body>
+</html>
