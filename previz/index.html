@@ -47,6 +47,9 @@ a.btn.ai{color:#1a1405}
 select,input[type=text],input[type=number]{background:#131417;border:1px solid var(--line);color:var(--text);border-radius:6px;height:28px;padding:0 6px;font:inherit;min-width:0}
 select{padding-right:4px;cursor:pointer}
 #top select{flex-shrink:0;width:auto}
+.trk{display:inline-flex;align-items:center;gap:6px;flex-shrink:0;color:var(--muted);font-size:12px;white-space:nowrap}
+.trk.on span{color:var(--accent)}
+.trk.on select{border-color:#8a6d2a;color:var(--accent)}
 input[type=number]{font-family:'JetBrains Mono',monospace;font-size:12px;width:100%}
 .xyz input[type=number]::-webkit-inner-spin-button,.xyz input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 .xyz input[type=number]{-moz-appearance:textfield;appearance:textfield;padding:0 5px}
@@ -222,6 +225,7 @@ details.cheat p{margin:0;line-height:1.55}
       <button data-view="editor" title="Свободный вид (C)">Редактор</button>
       <button data-view="shot" title="Вид из камеры кадра (C)">Камера</button>
     </div>
+    <label class="trk" title="Автотрекинг: камера кадра всё время держит выбранный объект в центре"><span>Автотрекинг</span><select id="trackSel"></select></label>
     <select id="aspectSel" title="Формат кадра">
       <option value="16:9">16:9</option><option value="9:16">9:16</option><option value="1:1">1:1</option><option value="4:5">4:5</option><option value="2.39:1">2.39:1</option>
     </select>
@@ -720,7 +724,15 @@ function syncUiButtons() {
 
 // ---------- outliner
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]));
+function renderTrack() {
+  const sel = $('#trackSel'); if (!sel) return;
+  const opts = '<option value="">выкл</option>' + [...objects.values()].map(o => `<option value="${o.id}">${esc(o.name)}</option>`).join('');
+  if (sel.dataset.o !== opts) { sel.innerHTML = opts; sel.dataset.o = opts; }
+  sel.value = cam.lookAt && objects.has(cam.lookAt) ? cam.lookAt : '';
+  sel.parentElement.classList.toggle('on', !!sel.value);
+}
 function renderOutliner() {
+  renderTrack();
   const el = $('#outliner');
   let h = `<div class="oi ${selected === 'cam' ? 'sel' : ''}" data-id="cam"><span class="dot" style="background:#f2c14e"></span><span class="nm">Камера кадра</span><span class="kc">${cam.keys.length ? '◆' + cam.keys.length : ''}</span></div>`;
   for (const o of objects.values())
@@ -875,7 +887,7 @@ function wireProps() {
   }));
   el$('[data-lookat]').forEach(s => s.addEventListener('change', () => {
     cam.lookAt = s.value || null; aimCam();
-    commit(); renderProps();
+    commit(); renderProps(); renderTrack();
   }));
   el$('[data-bb]').forEach(c => c.addEventListener('change', () => { const o = objects.get(selected); o.billboard = c.checked; if (!c.checked) o.root.rotation.y = 0; commit(); }));
   el$('[data-bgload]').forEach(b => b.addEventListener('click', () => $('#bgIn').click()));
@@ -1150,7 +1162,7 @@ transform.addEventListener('mouseDown', () => { yawGizmo.enabled = false; });
 transform.addEventListener('mouseUp', () => { yawGizmo.enabled = true; });
 yawGizmo.addEventListener('objectChange', () => { if (!playing) refreshProps(); });
 yawGizmo.addEventListener('mouseDown', () => {
-  if (selected === 'cam' && cam.lookAt) { cam.lookAt = null; renderProps(); toast('Автотрекинг выключен — теперь камеру крутишь вручную'); }
+  if (selected === 'cam' && cam.lookAt) { cam.lookAt = null; renderProps(); renderTrack(); toast('Автотрекинг выключен — теперь камеру крутишь вручную'); }
 });
 transform.addEventListener('objectChange', () => { if (!playing) refreshProps(); if (selected === 'cam' || gizmoDragging) updatePathsThrottled(); });
 let pathT = 0; function updatePathsThrottled() { const n = performance.now(); if (n - pathT > 60) { pathT = n; updatePaths(); } }
@@ -1257,6 +1269,7 @@ vp.addEventListener('drop', e => { e.preventDefault(); dragDepth = 0; $('#dropHi
 document.querySelectorAll('#modeSeg button').forEach(b => b.addEventListener('click', () => setTransformMode(b.dataset.mode)));
 document.querySelectorAll('#viewSeg button').forEach(b => b.addEventListener('click', () => setViewMode(b.dataset.view)));
 $('#pip').addEventListener('click', () => setViewMode('shot'));
+$('#trackSel').addEventListener('change', e => { cam.lookAt = e.target.value || null; aimCam(); commit(); if (selected === 'cam') renderProps(); toast(cam.lookAt ? 'Автотрекинг: камера держит «' + objects.get(cam.lookAt).name + '»' : 'Автотрекинг выключен'); });
 $('#aspectSel').addEventListener('change', e => { settings.aspect = e.target.value; applySettings(); commit(); });
 $('#autokeyBtn').addEventListener('click', () => { ui.autokey = !ui.autokey; autoWarned = false; syncUiButtons(); persist(); toast(ui.autokey ? 'Автоключ включён' : 'Автоключ выключен — ключи ставь кнопкой K'); });
 $('#undoBtn').addEventListener('click', undo);
