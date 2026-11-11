@@ -1651,7 +1651,7 @@ function openPrompt() {
     <div class="pstatus" id="pstat"><span class="partial" id="ppartial"></span></div>
     <div class="mrow">
       ${dict ? '<button class="btn mic" id="micBtn" data-m="mic">🎙 Голосом</button>' : ''}
-      <button class="btn ghost" data-m="copy" title="Скопировать правила, чтобы получить JSON у другой нейросети">Инструкция для другой нейросети</button>
+      <button class="btn" data-m="copy" title="Скопировать правила формата вместе с вашим описанием">📋 Скопировать запрос для ChatGPT / Claude</button>
       <span class="grow"></span>
       <button class="btn" data-m="close">Закрыть</button>
       ${canAI ? '<button class="btn ai" id="pgo" data-m="go" title="Умнее, но тратит лимит Claude того, кто нажал">✦ Через Claude</button>' : ''}
@@ -1663,7 +1663,7 @@ function openPrompt() {
       <div><h4>Время</h4><p>за 3 секунды · с 2 по 5 секунду<br>затем / потом · одновременно / в это время<br>в конце · ролик 8 секунд</p></div>
       <div><h4>Кадр</h4><p>формат 9:16 / вертикаль / 2.39<br>низкий ракурс · сверху · в профиль · три четверти<br>общий / средний / крупный план</p></div>
     </div></details>
-    <p class="note" style="margin:0">Можно вставить и JSON-сцену от другой нейросети (кнопка «Инструкция для другой нейросети») — применится сразу.</p>`, {
+    <div class="note" style="margin:0;background:#15171a;border:1px solid var(--line);border-radius:8px;padding:10px 12px;line-height:1.6"><b>Сложный шот (по стене, прыжки, хитрые пролёты)?</b> Соберите через свою нейросеть:<br>1) опишите идею в поле выше → 2) «📋 Скопировать запрос» и вставьте в ChatGPT или Claude → 3) скопируйте её ответ целиком, вставьте сюда и нажмите «▶ Разобрать текст».</div>`, {
     pnew: b => { ui.pmode = 'new'; b.classList.add('on'); b.nextElementSibling.classList.remove('on'); persist(); },
     pedit: b => { ui.pmode = 'edit'; b.classList.add('on'); b.previousElementSibling.classList.remove('on'); persist(); },
     mic: () => {
@@ -1673,7 +1673,7 @@ function openPrompt() {
     },
     copy: async () => {
       const txt = PROMPT_RULES + (ui.pmode === 'edit' ? '\n\nТЕКУЩАЯ СЦЕНА (измени по запросу, всё остальное и id сохрани):\n' + JSON.stringify(sceneToSpec()) : '') + '\n\nЗАПРОС РЕЖИССЁРА:\n' + ($('#ptext').value.trim() || '<опиши шот здесь>');
-      try { await navigator.clipboard.writeText(txt); setPStatus('Инструкция скопирована — вставь её в любую нейросеть, а её JSON-ответ — сюда.'); }
+      try { await navigator.clipboard.writeText(txt); setPStatus('Скопировано. Вставьте в ChatGPT или Claude, а их ответ — сюда, в это же поле, и нажмите «▶ Разобрать текст».'); }
       catch (e) { $('#ptext').value = txt; $('#ptext').select(); setPStatus('Не удалось скопировать автоматически — текст в поле, скопируй вручную.'); }
     },
     close: () => { if (pctl) pctl.abort(); if (dict && dict.active()) dict.stop().catch(() => {}); hideModal(); },
@@ -1687,9 +1687,11 @@ function openPrompt() {
   setTimeout(() => ta.focus(), 30);
 }
 function tryParseJSON(t) {
-  const s = t.trim(); if (!s.startsWith('{') && !s.startsWith('```')) return null;
-  const body = s.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '');
-  try { return JSON.parse(body); } catch (e) { return null; }
+  const s = t.trim();
+  if (!/"objects"\s*:/.test(s) && !s.startsWith('{')) return null;
+  const a = s.indexOf('{'), b = s.lastIndexOf('}');
+  if (a < 0 || b <= a) return null;
+  try { return JSON.parse(s.slice(a, b + 1)); } catch (e) { return null; }
 }
 async function runPrompt() {
   const ta = $('#ptext'); if (!ta) return;
