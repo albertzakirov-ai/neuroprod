@@ -236,7 +236,7 @@ details.cheat p{margin:0;line-height:1.55}
       <button data-view="editor" title="Свободный вид (C)">Редактор</button>
       <button data-view="shot" title="Вид из камеры кадра (C)">Камера</button>
     </div>
-    <label class="trk" title="Автотрекинг: камера кадра всё время держит выбранный объект в центре"><span>Автотрекинг</span><select id="trackSel"></select></label>
+    <label class="trk" title="Автотрекинг: камера кадра всё время держит выбранный объект в центре"><span>Автотрекинг</span><select id="trackSel"></select><select id="trackPt" title="Какую точку объекта держать в центре кадра"><option value="center">центр</option><option value="face">лицо</option><option value="feet">ноги</option></select></label>
     <select id="aspectSel" title="Формат кадра">
       <option value="16:9">16:9</option><option value="9:16">9:16</option><option value="1:1">1:1</option><option value="4:5">4:5</option><option value="2.39:1">2.39:1</option>
     </select>
@@ -328,7 +328,7 @@ const ICONS = {
 const settings = { bg:'#c7cbd2', floor:'#8f949c', grid:true, gridInShot:false, thirds:true, sunAz:35, sunEl:52, aspect:'16:9', duration:5, fps:24, bgImg:null, floorVis:true };
 const images = {}; const texCache = new Map();
 const ui = { autokey:true, loop:true, recCount:1, recRes:720, lastPrompt:'', pmode:'new' };
-const cam = { keys:[], interp:'smooth', lookAt:null, focal:35 };
+const cam = { keys:[], interp:'smooth', lookAt:null, focal:35, trackPt:'center' };
 const objects = new Map();
 let idSeq = 1, selected = null, selKey = null, time = 0, playing = false, viewMode = 'editor', recording = false;
 
@@ -544,10 +544,21 @@ function objCenter(id, out = new THREE.Vector3()) {
   const o = objects.get(id); if (!o) return out.set(0, 1, 0);
   return new THREE.Box3().setFromObject(o.root).getCenter(out);
 }
+function trackPoint(id, out = new THREE.Vector3()) {
+  const o = objects.get(id); if (!o) return out.set(0, 1, 0);
+  const box = new THREE.Box3().setFromObject(o.root);
+  box.getCenter(out);
+  if (cam.trackPt === 'feet') out.y = box.min.y + (box.max.y - box.min.y) * 0.06;
+  else if (cam.trackPt === 'face') {
+    if (o.type === 'human') return o.root.localToWorld(out.set(0, 1.73, 0.04));
+    out.y = box.max.y - (box.max.y - box.min.y) * 0.12;
+  }
+  return out;
+}
 function aimCam() {
   if (!cam.lookAt) return;
   if (!objects.has(cam.lookAt)) { cam.lookAt = null; return; }
-  shotCam.lookAt(objCenter(cam.lookAt));
+  shotCam.lookAt(trackPoint(cam.lookAt));
 }
 let gizmoDragging = false, shotOrbiting = false;
 function applyTime(t) {
@@ -664,7 +675,7 @@ function serialize(withImages) {
     if (o.type === 'image') Object.assign(d, { img:o.img, imgAspect:o.imgAspect, billboard:o.billboard });
     return d;
   });
-  const out = { v:1, app:'previz-lite', settings, idSeq, cam:{ keys:cam.keys, interp:cam.interp, lookAt:cam.lookAt, ...camPose() }, objects:objs };
+  const out = { v:1, app:'previz-lite', settings, idSeq, cam:{ keys:cam.keys, interp:cam.interp, lookAt:cam.lookAt, trackPt:cam.trackPt, ...camPose() }, objects:objs };
   if (withImages) {
     const used = new Set(objs.filter(o => o.img).map(o => o.img)); if (settings.bgImg) used.add(settings.bgImg);
     out.images = {}; for (const k of used) if (images[k]) out.images[k] = images[k];
@@ -680,7 +691,7 @@ function load(json) {
   for (const o of [...objects.values()]) disposeObject(o);
   Object.assign(settings, { bgImg:null, floorVis:true }, d.settings || {});
   idSeq = d.idSeq || 1;
-  cam.keys = d.cam.keys || []; cam.interp = d.cam.interp || 'smooth'; cam.lookAt = d.cam.lookAt || null;
+  cam.keys = d.cam.keys || []; cam.interp = d.cam.interp || 'smooth'; cam.lookAt = d.cam.lookAt || null; cam.trackPt = d.cam.trackPt || 'center';
   setShotAspect(ASPECTS[settings.aspect] || 16/9);
   setCamPose({ pos:d.cam.pos || [0,1.6,6], rot:d.cam.rot || [0,0,0], focal:d.cam.focal || 35 });
   for (const od of d.objects) createObject(od);
@@ -741,6 +752,7 @@ function renderTrack() {
   if (sel.dataset.o !== opts) { sel.innerHTML = opts; sel.dataset.o = opts; }
   sel.value = cam.lookAt && objects.has(cam.lookAt) ? cam.lookAt : '';
   sel.parentElement.classList.toggle('on', !!sel.value);
+  const tp = $('#trackPt'); if (tp) { tp.value = cam.trackPt || 'center'; tp.disabled = !sel.value; tp.style.opacity = sel.value ? 1 : .45; }
 }
 function renderOutliner() {
   renderTrack();
@@ -1111,7 +1123,7 @@ function setViewMode(m) {
   syncUiButtons(); updateHint();
 }
 function resetShotTarget() {
-  if (cam.lookAt && objects.has(cam.lookAt)) controls.target.copy(objCenter(cam.lookAt));
+  if (cam.lookAt && objects.has(cam.lookAt)) controls.target.copy(trackPoint(cam.lookAt));
   else controls.target.copy(shotCam.position).add(new THREE.Vector3(0, 0, -4).applyQuaternion(shotCam.quaternion));
 }
 function syncDisplayCam(w, h, a) {
@@ -1301,6 +1313,7 @@ document.querySelectorAll('#modeSeg button').forEach(b => b.addEventListener('cl
 document.querySelectorAll('#viewSeg button').forEach(b => b.addEventListener('click', () => setViewMode(b.dataset.view)));
 $('#pip').addEventListener('click', () => setViewMode('shot'));
 $('#trackSel').addEventListener('change', e => { cam.lookAt = e.target.value || null; aimCam(); commit(); if (selected === 'cam') renderProps(); toast(cam.lookAt ? 'Автотрекинг: камера держит «' + objects.get(cam.lookAt).name + '»' : 'Автотрекинг выключен'); });
+$('#trackPt').addEventListener('change', e => { cam.trackPt = e.target.value; aimCam(); commit(); toast(cam.trackPt === 'face' ? 'Камера держит в центре лицо' : cam.trackPt === 'feet' ? 'Камера держит в центре ноги' : 'Камера держит центр объекта'); });
 $('#aspectSel').addEventListener('change', e => { settings.aspect = e.target.value; applySettings(); commit(); });
 $('#autokeyBtn').addEventListener('click', () => { ui.autokey = !ui.autokey; autoWarned = false; syncUiButtons(); persist(); toast(ui.autokey ? 'Автоключ включён' : 'Автоключ выключен — ключи ставь кнопкой K'); });
 $('#undoBtn').addEventListener('click', undo);
@@ -2129,6 +2142,8 @@ function directText(raw, mode) {
   }
   if (camActs.length) {
     cam.lookAt = (!usePan && trackTarget) ? trackTarget.id : null;
+    const allCam = camActs.map(a => a.text).join(' ');
+    cam.trackPt = /лиц|глаз[а-я]* героя|портрет/.test(allCam) ? 'face' : /ног|обув|кроссов|шаг/.test(allCam) ? 'feet' : 'center';
     if (cam.keys.length < 2) { const k = cam.keys[0]; if (k) setCamPose(k); cam.keys = []; }
     else setCamPose(cam.keys[0]);
   }
